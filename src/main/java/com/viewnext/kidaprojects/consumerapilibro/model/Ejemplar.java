@@ -18,6 +18,9 @@ public class Ejemplar {
 		this.precio = precio;
 	}
 
+	public Ejemplar() {
+		
+	}
 
 	public String getIsbn() {
 		return isbn;

@@ -1,5 +1,6 @@
 package com.viewnext.kidaprojects.consumerapilibro.service;
 
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -9,9 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-
-import com.viewnext.kidaprojects.consumerapilibro.exception.NotFoundException;
-import com.viewnext.kidaprojects.consumerapilibro.exception.WebCLientException;
 import com.viewnext.kidaprojects.consumerapilibro.model.Ejemplar;
 
 @Service
@@ -25,51 +23,203 @@ public class EjemplarServiceImpl implements EjemplarService {
 
 	@Override
 	public ResponseEntity<?> mostrarEjemplares() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		try {
+			ResponseEntity<List<Ejemplar>> response = libroWebClient.get()
+					.uri("/libros")
+			        .accept(MediaType.APPLICATION_JSON)
+			        .retrieve()
+			        .toEntityList(Ejemplar.class)
+			        .block();
+			
+			
+				return ResponseEntity.ok(response);
+		
+		} catch (WebClientResponseException  e) {
+			if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("LIBRO_NOT_FOUND");
+            } else  {
+                
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR");
+            }
+		}
+		
+		
+		
 	}
 
 	@Override
 	public ResponseEntity<?> mostrarEjemplaresPorTitulo(String titulo) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			ResponseEntity<List<Ejemplar>> response = libroWebClient.get()
+					.uri("/libros/titulo/{titulo}", titulo)
+			        .accept(MediaType.APPLICATION_JSON)
+			        .retrieve()
+			        .toEntityList(Ejemplar.class)
+			        .block();
+			
+			
+			
+			return ResponseEntity.ok(response);
+		} catch (WebClientResponseException  e) {
+			if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("LIBRO_NOT_FOUND");
+            } else  {
+                
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR");
+            }
+		}
+		
+		
+
 	}
 
 	@Override
 	public ResponseEntity<?> mostrarEjemplaresPorAutor(String autor) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			ResponseEntity<List<Ejemplar>> response = libroWebClient.get()
+					.uri("/libros/autor/{autor}", autor)
+			        .accept(MediaType.APPLICATION_JSON)
+			        .retrieve()
+			        .toEntityList(Ejemplar.class)
+			        .block();
+			
+			
+			
+			return ResponseEntity.ok(response);
+		} catch (WebClientResponseException  e) {
+			if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("LIBRO_NOT_FOUND");
+            } else  {
+                
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR");
+            }
+		}
+		
 	}
 
 	@Override
 	public ResponseEntity<?> mostrarEjemplarPorIsbn(String isbn) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			ResponseEntity<Ejemplar> response = libroWebClient.get()
+					.uri("/libro/{isbn}", isbn)
+			        .accept(MediaType.APPLICATION_JSON)
+			        .retrieve()
+			        .toEntity(Ejemplar.class)
+			        .block();
+			
+			
+			
+			return ResponseEntity.ok(response);
+		} catch (WebClientResponseException  e) {
+			if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("LIBRO_NOT_FOUND");
+            } else  {
+                
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR");
+            }
+		}
 	}
 
 	@Override
-	public ResponseEntity<?> crearEjemplar(Ejemplar ejemplar) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResponseEntity<?> crearEjemplar(Ejemplar ejemplarParaCrear) {
+		try {
+			ResponseEntity<Ejemplar> response = libroWebClient.post()
+					.uri("/libro")
+			        .accept(MediaType.APPLICATION_JSON)
+			        .body(ejemplarParaCrear, Ejemplar.class)
+			        .retrieve()
+			        .toEntity(Ejemplar.class)
+			        .block();
+			String isbn = response.getBody().getIsbn();
+			URI location = URI.create("http://localhost:8080/libro/" + isbn);
+			
+			return ResponseEntity.created(location).build();
+		} catch (WebClientResponseException  e) {
+			if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("LIBRO_NOT_FOUND");
+            } else  {
+                
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR");
+            }
+		}
 	}
 
 	@Override
 	public ResponseEntity<?> crearVariosEjemplares(List<Ejemplar> listaEjemplares) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			libroWebClient.post()
+					.uri("/libros")
+			        .accept(MediaType.APPLICATION_JSON)
+			        .body(listaEjemplares, Ejemplar.class)
+			        .retrieve()
+			        .toEntityList(Ejemplar.class)
+			        .block();
+			
+			URI location = URI.create("http://localhost:8080/libros");
+			
+			return ResponseEntity.created(location).build();
+		} catch (WebClientResponseException  e) {
+			if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("LIBRO_NOT_FOUND");
+            } else  {
+                
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR");
+            }
+		}
 	}
 
 	@Override
 	public ResponseEntity<?> actualizarEjemplar(Ejemplar ejemplarParaActualizar) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			ResponseEntity<Ejemplar> response = libroWebClient.put()
+					.uri("/libro")
+			        .accept(MediaType.APPLICATION_JSON)
+			        .body(ejemplarParaActualizar, Ejemplar.class)
+			        .retrieve()
+			        .toEntity(Ejemplar.class)
+			        .block();
+			
+			
+			return ResponseEntity.ok(response);
+		} catch (WebClientResponseException  e) {
+			if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("LIBRO_NOT_FOUND");
+            } else  {
+                
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR");
+            }
+		}
 	}
 
 	@Override
 	public ResponseEntity<?> borrarEjemplarPorIsbn(String isbn) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			libroWebClient.delete()
+					.uri("/libro/{isbn}", isbn)
+					.retrieve()
+					.toBodilessEntity()
+					.block();
+			
+			return ResponseEntity.noContent().build();
+		} catch (WebClientResponseException  e) {
+			if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("LIBRO_NOT_FOUND");
+            } else  {
+                
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR");
+            }
+		}
 	}
+	
 
 	
 }
