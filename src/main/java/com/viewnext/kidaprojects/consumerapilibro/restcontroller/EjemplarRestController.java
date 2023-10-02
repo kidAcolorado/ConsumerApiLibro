@@ -9,15 +9,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.viewnext.kidaprojects.consumerapilibro.service.EjemplarServiceImpl;
+import com.viewnext.kidaprojects.consumerapilibro.service.EjemplarService;
+
 
 @RestController
 public class EjemplarRestController {
 
 	
-	private final EjemplarServiceImpl service;
+	private final EjemplarService service;
 	
-	public EjemplarRestController(EjemplarServiceImpl service) {
+	public EjemplarRestController(EjemplarService service) {
 		this.service = service;
 	}
 	
