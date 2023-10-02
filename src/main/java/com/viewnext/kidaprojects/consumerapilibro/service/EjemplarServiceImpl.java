@@ -135,6 +135,7 @@ public class EjemplarServiceImpl implements EjemplarService {
 			        .retrieve()
 			        .toEntity(Ejemplar.class)
 			        .block();
+			
 			String isbn = response.getBody().getIsbn();
 			URI location = URI.create("http://localhost:8080/libro/" + isbn);
 			
@@ -161,7 +162,7 @@ public class EjemplarServiceImpl implements EjemplarService {
 			        .toEntityList(Ejemplar.class)
 			        .block();
 			
-			URI location = URI.create("http://localhost:8080/libros");
+			URI location = URI.create("http://localhost:8080/libros"); //No sé si hay que devolver esta o la de ejemplar/{isbn}
 			
 			return ResponseEntity.created(location).build();
 		} catch (WebClientResponseException  e) {
